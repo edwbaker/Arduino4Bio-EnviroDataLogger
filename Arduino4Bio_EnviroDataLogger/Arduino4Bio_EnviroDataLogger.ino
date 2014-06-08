@@ -5,11 +5,11 @@
 //for Arduino for Biologists by Pelagic Publishing
 
 //Libraries
-#include <SPI.h>          //Standard Arduino
+//#include <SPI.h>          //Standard Arduino
 #include <SD.h>           //
 #include <Wire.h>         //
 
-#include "DHT.h"          //Library for reading the DHT-22 sensor (get from: https://github.com/adafruit/DHT-sensor-library )
+#include <DHT.h>          //Library for reading the DHT-22 sensor (get from: https://github.com/adafruit/DHT-sensor-library )
 #include <Time.h>         //Generic functions for managing date/time data (get from: http://www.pjrc.com/teensy/td_libs_Time.html )
 #include <DS1307RTC.h>    //Tools for manipulating the DS1307 real time clock (get from https://bitbucket.org/johnmccombs/arduino-libraries/downloads )
 #include <Sleep_n0m1.h>   //Easy-to-use way of putting Arduino sleetp (get from https://github.com/n0m1/Sleep_n0m1 )
