@@ -1,17 +1,21 @@
 //Ecological Data Logger
 //======================
 //
-//Ed Baker (ebaker.me.uk)
+//by Ed Baker (ebaker.me.uk)
+//for Arduino for Biologists by Pelagic Publishing
 
 //Libraries
-#include "DHT.h"
-#include <SPI.h>
-#include <SD.h>
-#include "lta_Struct.h"
-#include <DS1307RTC.h>
-#include <Time.h>
-#include <Wire.h>
-#include <Sleep_n0m1.h>
+#include <SPI.h>          //
+#include <SD.h>           //
+#include <Wire.h>         //
+
+
+#include "DHT.h"          //Library for reading the DHT-22 sensor (get from: https://github.com/adafruit/DHT-sensor-library )
+#include <Time.h>         //This, the DS1307RTC and other time-related libraries can be found
+#include <DS1307RTC.h>    //  at https://bitbucket.org/johnmccombs/arduino-libraries/downloads
+#include <Sleep_n0m1.h>   //Easy-to-use way of putting Arduino sleetp (get from https://github.com/n0m1/Sleep_n0m1 )
+
+#include "EnviroStruct.h" //We define the struct 'reading' to handle time, temperature and humidity together
 
 //DHT (Digital Humidity and Temperature Sensor)
 #define DHTPIN 2
@@ -105,7 +109,7 @@ void setup() {
 }
 
 void loop() {
-  lta data = lta_get_data();
+  reading data = reading_get_data();
   data_post(data);
   error_blink(1); //Should move to data_post function
   Serial.println("Starting sleep.");
@@ -115,7 +119,7 @@ void loop() {
   Serial.println("Ending sleep.");
 }
 
-boolean sd_post(lta data) {
+boolean sd_post(reading data) {
   //Generate new line of data
   char humidity[6];
   char temperature[6];
@@ -127,10 +131,6 @@ boolean sd_post(lta data) {
   request +=  humidity;
   request += ",";
   request +=  temperature;
-  request += ",";
-  request +=  data.ethernet;
-  request += ",";
-  request += data.fail;
 
   //Append to file
   File dataFile = SD.open("data.txt", FILE_WRITE);
@@ -149,14 +149,13 @@ boolean sd_post(lta data) {
   }
 }
 
-boolean data_post(lta data) {
+boolean data_post(reading data) {
     boolean sd = false;
     int i = 0;
     while (sd == false && i < 5) {
       sd = sd_post(data);
       i++;
     }
-  }
 }
 
 
@@ -170,7 +169,7 @@ boolean init_sd() {
   return true;
 }
 
-lta lta_get_data(){
+reading reading_get_data(){
   uint32_t time     = RTC.get();
   float    h        = dht.readHumidity();
   float    t        = dht.readTemperature();
@@ -187,12 +186,10 @@ lta lta_get_data(){
     error_condition(error);
     fail = true;
   } 
-  lta data = {
+  reading data = {
     time,
     h,
     t,
-    ethernet,
-    fail
   };
   return data;
 }
@@ -219,7 +216,6 @@ void error_condition(error error) {
   switch (error.level) {
     case 1:
       error_blink(5);
-      softReset();
       break;
     case 2:
       error_blink(4);
