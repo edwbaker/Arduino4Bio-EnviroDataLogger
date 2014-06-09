@@ -88,7 +88,7 @@ void setup() {
     error_condition(error);
   } while (!connected & i < 10);
   
-  //add to doc: set time providor
+  //Set time provider
   setSyncProvider(RTC.get);
   
   //We're good to go! 
