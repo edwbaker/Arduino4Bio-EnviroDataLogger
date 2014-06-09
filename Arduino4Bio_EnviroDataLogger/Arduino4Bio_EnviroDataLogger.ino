@@ -60,22 +60,24 @@ void setup() {
   dht.begin();
   i =0;
   boolean connected = true;
+  
   //The DHT-22 will return a not-a-number (NaN) error if a reading failed
   //In some instances it will also return a value of 0 for both temperature and humidity if there is an error
   //We check for any of these and don't count them as valid if they occur
   
-  //TODO: Rewrite this to avoid repetition
-  if (isnan(dht.readTemperature())) { connected = false; }
-  if (isnan(dht.readHumidity())) { connected = false; }
-  if (dht.readTemperature() == 0 && dht.readHumidity() == 0) { connected = false; }
-  //We keep trying to connect up to 10 times
-  while (!connected & i < 10) {
+  do {
     i++;
+    connected = true;
+    if (isnan(dht.readTemperature())) { connected = false; }
+    if (isnan(dht.readHumidity())) { connected = false; }
+    if (dht.readTemperature() == 0 && dht.readHumidity() == 0) { connected = false; }
+    
+    //We keep trying to connect up ten times
     int warning;
     if (i < 10) {
-      warning = 3;
+      warning = 4; //Notice
     } else {
-      warning = 1;
+      warning = 1; //Fatal
     }
     String error_msg = "Cannot connect to sensor. Try ";
     error_msg.concat(i);
@@ -84,11 +86,7 @@ void setup() {
       warning
     };
     error_condition(error);
-    connected = true;
-    if (isnan(dht.readTemperature())) { connected = false; }
-    if (isnan(dht.readHumidity())) { connected = false; }
-    if (dht.readTemperature() == 0 && dht.readHumidity() == 0) { connected = false; }
-  }
+  } while (!connected & i < 10);
   
   //We're good to go! 
   Serial.println("Connected.");
@@ -108,11 +106,12 @@ void loop() {
   data_blink(1); //Should move to data_post function
   
   //Move into separate function
-  Serial.println("Starting sleep.");
-  delay(100);
+  snooze(60000);
+}
+
+void snooze(int snoozeMills) {
   sleep.pwrDownMode();
-  sleep.sleepDelay(60000);
-  Serial.println("Ending sleep.");
+  sleep.sleepDelay(snoozeMills);
 }
 
 //The data_post function is a wrapper function around sd_post (the function that saves the data to the SD card).
