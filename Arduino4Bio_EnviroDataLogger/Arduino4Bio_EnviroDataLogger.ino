@@ -88,6 +88,9 @@ void setup() {
     error_condition(error);
   } while (!connected & i < 10);
   
+  //add to doc: set time providor
+  setSyncProvider(RTC.get);
+  
   //We're good to go! 
   Serial.println("Connected.");
   Serial.println();
@@ -180,7 +183,9 @@ boolean init_sd() {
 
 //Function to read the sensors and clock and return a struct if successful
 reading reading_get_data(){
-  uint32_t time     = RTC.get();
+  uint32_t time     = now();
+  
+  Serial.println(time);
   float    h        = dht.readHumidity();
   float    t        = dht.readTemperature();
   
