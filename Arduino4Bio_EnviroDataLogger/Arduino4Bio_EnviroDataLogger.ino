@@ -106,9 +106,6 @@ void loop() {
   //We then send the data to a fucntion to handle saving it
   data_post(data);
   
-  data_blink(1); //Should move to data_post function
-  
-  //Move into separate function
   snooze(60000);
 }
 
@@ -130,6 +127,7 @@ boolean data_post(reading data) {
       i++;
     }
     //TODO: error!
+    data_blink(1);
 }
 
 //This function takes the reading struct and forms a row of a CSV file
